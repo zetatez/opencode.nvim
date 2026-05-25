@@ -19,12 +19,12 @@ function M.check()
     vim.health.warn("Could not determine `opencode.nvim` git commit hash.")
   end
 
-  vim.health.info("`vim.g.opencode_opts`: " .. (vim.g.opencode_opts and vim.inspect(vim.g.opencode_opts) or "`nil`"))
+  vim.health.info("`vim.g.opencode_opts`: " .. vim.inspect(vim.g.opencode_opts))
 
   local opts = require("opencode.config").opts
   if opts.events.reload and not vim.o.autoread then
     vim.health.warn(
-      "`opts.events.reload = true` but `vim.o.autoread = false`: files edited by `opencode` won't be automatically reloaded in buffers.",
+      "`vim.g.opencode_opts.events.reload = true` but `vim.o.autoread = false`: files edited by `opencode` won't be automatically reloaded in buffers.",
       {
         "Set `vim.o.autoread = true`",
         "Or set `vim.g.opencode_opts.events.reload = false`",
