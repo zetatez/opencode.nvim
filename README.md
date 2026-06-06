@@ -159,6 +159,21 @@ vim.g.opencode_opts = {
 vim.keymap.set({ 'n', 't' }, '<C-.>', function()
   require('snacks.terminal').toggle(opencode_cmd, snacks_terminal_opts)
 end, { desc = 'Toggle opencode' })
+
+-- Optionally show upon submitting prompt
+vim.api.nvim_create_autocmd('User', {
+  pattern = { 'OpencodeEvent:tui.command.execute' },
+  callback = function(args)
+    ---@type opencode.server.Event
+    local event = args.data.event
+    if event.properties.command == 'prompt.submit' then
+      local win = require('snacks.terminal').get(opencode_cmd, { create = false })
+      if win then
+        win:show()
+      end
+    end
+  end,
+})
 ```
 
 ## 🚀 Usage
