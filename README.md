@@ -57,18 +57,14 @@ https://github.com/user-attachments/assets/e85e021c-fa8f-466e-830c-c667b28f611e
     vim.o.autoread = true -- Required for `vim.g.opencode_opts.events.reload`
 
     -- Recommended/example keymaps
-    vim.keymap.set({ "n", "x" }, "<C-a>", function() require("opencode").ask("@this: ") end, { desc = "Ask opencode…" })
-    vim.keymap.set({ "n", "x" }, "<C-x>", function() require("opencode").select() end,       { desc = "Select opencode…" })
+    vim.keymap.set({ "n", "x" }, "<leader>oa", function() require("opencode").ask("@this: ") end, { desc = "Ask opencode…" })
+    vim.keymap.set({ "n", "x" }, "<leader>os", function() require("opencode").select() end,       { desc = "Select opencode…" })
 
     vim.keymap.set({ "n", "x" }, "go",  function() return require("opencode").operator("@this ") end,        { desc = "Add range to opencode", expr = true })
     vim.keymap.set("n",          "goo", function() return require("opencode").operator("@this ") .. "_" end, { desc = "Add line to opencode", expr = true })
 
     vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end,   { desc = "Scroll opencode up" })
     vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, { desc = "Scroll opencode down" })
-
-    -- You may want these if you use the opinionated `<C-a>` and `<C-x>` keymaps above
-    vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
-    vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
   end,
 }
 ```
@@ -155,7 +151,8 @@ vim.g.opencode_opts = {
   },
 }
 
--- Can also leverage toggle functionality
+-- Can also leverage toggle functionality.
+-- Avoid <leader> here — Neovim watches for keymaps in terminal mode, so your leader key will have input delay.
 vim.keymap.set({ 'n', 't' }, '<C-.>', function()
   require('snacks.terminal').toggle(opencode_cmd, snacks_terminal_opts)
 end, { desc = 'Toggle opencode' })
