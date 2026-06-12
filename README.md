@@ -38,14 +38,14 @@ vim.g.opencode_opts = {
 vim.o.autoread = true -- Required for `vim.g.opencode_opts.events.reload`
 
 -- Recommended/example keymaps
-vim.keymap.set({ "n", "x" }, "<leader>oa", function() require("opencode").ask("@this: ") end, { desc = "Ask opencode…" })
-vim.keymap.set({ "n", "x" }, "<leader>os", function() require("opencode").select() end,       { desc = "Select opencode…" })
+vim.keymap.set({ "n", "x" }, "<leader>oa", function() require("opencode").ask("@this: ") end, { desc = "Ask OpenCode…" })
+vim.keymap.set({ "n", "x" }, "<leader>os", function() require("opencode").select() end,       { desc = "Select OpenCode…" })
 
-vim.keymap.set({ "n", "x" }, "go",  function() return require("opencode").operator("@this ") end,        { desc = "Add range to opencode", expr = true })
-vim.keymap.set("n",          "goo", function() return require("opencode").operator("@this ") .. "_" end, { desc = "Add line to opencode", expr = true })
+vim.keymap.set({ "n", "x" }, "go",  function() return require("opencode").operator("@this ") end,        { desc = "Append range to OpenCode", expr = true })
+vim.keymap.set("n",          "goo", function() return require("opencode").operator("@this ") .. "_" end, { desc = "Append line to OpenCode", expr = true })
 
-vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end,   { desc = "Scroll opencode up" })
-vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, { desc = "Scroll opencode down" })
+vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end,   { desc = "Scroll OpenCode up" })
+vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, { desc = "Scroll OpenCode down" })
 ```
 
 <details>
@@ -64,14 +64,14 @@ vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.h
     vim.o.autoread = true -- Required for `vim.g.opencode_opts.events.reload`
 
     -- Recommended/example keymaps
-    vim.keymap.set({ "n", "x" }, "<leader>oa", function() require("opencode").ask("@this: ") end, { desc = "Ask opencode…" })
-    vim.keymap.set({ "n", "x" }, "<leader>os", function() require("opencode").select() end,       { desc = "Select opencode…" })
+    vim.keymap.set({ "n", "x" }, "<leader>oa", function() require("opencode").ask("@this: ") end, { desc = "Ask OpenCode…" })
+    vim.keymap.set({ "n", "x" }, "<leader>os", function() require("opencode").select() end,       { desc = "Select OpenCode…" })
 
-    vim.keymap.set({ "n", "x" }, "go",  function() return require("opencode").operator("@this ") end,        { desc = "Add range to opencode", expr = true })
-    vim.keymap.set("n",          "goo", function() return require("opencode").operator("@this ") .. "_" end, { desc = "Add line to opencode", expr = true })
+    vim.keymap.set({ "n", "x" }, "go",  function() return require("opencode").operator("@this ") end,        { desc = "Append range to OpenCode", expr = true })
+    vim.keymap.set("n",          "goo", function() return require("opencode").operator("@this ") .. "_" end, { desc = "Append line to OpenCode", expr = true })
 
-    vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end,   { desc = "Scroll opencode up" })
-    vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, { desc = "Scroll opencode down" })
+    vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end,   { desc = "Scroll OpenCode up" })
+    vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, { desc = "Scroll OpenCode down" })
   end,
 }
 ```
@@ -169,7 +169,7 @@ require("lualine").setup({
 | `@marks`       | Global marks                                                            |
 
 > [!TIP]
-> `opencode` reads referenced files from disk — save your changes!
+> OpenCode reads referenced files from disk — save your changes!
 
 ### Prompts
 
@@ -188,12 +188,12 @@ Select prompts to review, explain, and improve your code:
 
 ### Server
 
-Run local `opencode`s however you like and `opencode.nvim` will find them! Or point `vim.g.opencode_opts.server.url` to a specific server, including remotes.
+Run `opencode` locally however you like and `opencode.nvim` will find them! Or point `vim.g.opencode_opts.server.url` to a specific server, including remotes.
 
 > [!IMPORTANT]
 > You _must_ run `opencode` with the `--port` flag to expose its server.
 
-If `opencode.nvim` can't find an existing `opencode`, it starts one for you via `vim.g.opencode_opts.server.start`, defaulting to `term://opencode --port`.
+If `opencode.nvim` can't find a running `opencode`, it starts one via `vim.g.opencode_opts.server.start`, defaulting to `term://opencode --port`.
 
 <details>
 <summary><a href="https://github.com/folke/snacks.nvim/blob/main/docs/terminal.md">snacks.terminal</a></summary>
@@ -221,7 +221,7 @@ vim.g.opencode_opts = {
 -- Avoid <leader> here — Neovim watches for keymaps in terminal mode, so your leader key will have input delay.
 vim.keymap.set({ 'n', 't' }, '<C-.>', function()
   require('snacks.terminal').toggle(opencode_cmd, snacks_terminal_opts)
-end, { desc = 'Toggle opencode' })
+end, { desc = 'Toggle OpenCode' })
 
 -- Optionally show upon submitting prompt
 vim.api.nvim_create_autocmd('User', {
@@ -245,11 +245,11 @@ vim.api.nvim_create_autocmd('User', {
 
 ### Ask — `require("opencode").ask()`
 
-Input a prompt for `opencode`.
+Input a prompt for OpenCode.
 
 - End the prompt with a space to append instead of submit.
 - Press `<Up>` to browse recent asks.
-- Highlights and completes contexts and `opencode` subagents.
+- Highlights and completes contexts and OpenCode subagents.
   - Press `<Tab>` to trigger built-in completion.
   - Provided by in-process LSP when using `snacks.input`.
 
@@ -265,11 +265,11 @@ Highlights and previews items when using `snacks.picker`.
 
 ### Prompt — `require("opencode").prompt()`
 
-Prompt `opencode`.
+Prompt OpenCode.
 
 - End the prompt with a space to append instead of submit.
 - Injects configured contexts.
-- `opencode` will interpret references to files or subagents.
+- OpenCode will interpret references to files or subagents.
 
 ### Operator — `require("opencode").operator()`
 
@@ -277,7 +277,7 @@ Wraps `prompt` as an operator, supporting ranges and dot-repeat.
 
 ### Command — `require("opencode").command()`
 
-Command `opencode`:
+Command OpenCode:
 
 | Command                  | Description                                        |
 | ------------------------ | -------------------------------------------------- |
@@ -301,10 +301,10 @@ Command `opencode`:
 
 ## 👀 Events
 
-`opencode.nvim` forwards `opencode`'s Server-Sent-Events as an `OpencodeEvent` autocmd:
+`opencode.nvim` forwards OpenCode's Server-Sent-Events as an `OpencodeEvent` autocmd:
 
 ```lua
--- Handle `opencode` events
+-- Handle OpenCode events
 vim.api.nvim_create_autocmd("User", {
   pattern = "OpencodeEvent:*", -- Optionally filter event types
   callback = function(args)
@@ -317,7 +317,7 @@ vim.api.nvim_create_autocmd("User", {
     vim.notify(vim.inspect(event))
     -- Do something useful
     if event.type == "session.idle" then
-      vim.notify("`opencode` finished responding")
+      vim.notify("OpenCode finished responding")
     end
   end,
 })
@@ -325,11 +325,11 @@ vim.api.nvim_create_autocmd("User", {
 
 ### Edits
 
-When `opencode` edits a file, `opencode.nvim` automatically reloads the corresponding buffer.
+When OpenCode edits a file, `opencode.nvim` automatically reloads the corresponding buffer.
 
 ### Permissions
 
-When `opencode` requests a permission, `opencode.nvim` waits for idle to ask you to approve or deny it.
+When OpenCode requests a permission, `opencode.nvim` waits for idle to ask you to approve or deny it.
 
 #### Edits
 
@@ -347,5 +347,5 @@ For edit requests, `opencode.nvim` opens the target file in a new tab and uses N
 ## 🙏 Acknowledgments
 
 - Inspired by [nvim-aider](https://github.com/GeorgesAlkhouri/nvim-aider), [neopencode.nvim](https://github.com/loukotal/neopencode.nvim), and [sidekick.nvim](https://github.com/folke/sidekick.nvim).
-- Uses `opencode`'s TUI for simplicity — see [sudo-tee/opencode.nvim](https://github.com/sudo-tee/opencode.nvim) for a Neovim frontend.
+- Uses OpenCode's TUI for simplicity — see [sudo-tee/opencode.nvim](https://github.com/sudo-tee/opencode.nvim) for a Neovim frontend.
 - [mcp-neovim-server](https://github.com/bigcodegen/mcp-neovim-server) may better suit you, but it lacks customization and tool calls are slow and unreliable.

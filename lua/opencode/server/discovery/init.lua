@@ -16,7 +16,7 @@ local function find()
       if #servers_sharing_cwd == 0 then
         -- We prefer falling back to `opts.server.start` over selecting from servers that don't match the CWD.
         -- Manual selection is still available for that rare need.
-        return Promise.reject("No `opencode` servers found with overlapping CWD")
+        return Promise.reject("No OpenCode servers found with overlapping CWD")
       elseif #servers_sharing_cwd == 1 then
         return servers_sharing_cwd[1]
       else
@@ -25,14 +25,14 @@ local function find()
     end)
 end
 
----Look for an `opencode` server every second, rejecting if not found after five seconds.
+---Look for an OpenCode server every second, rejecting if not found after five seconds.
 ---
 ---@return Promise<opencode.server.Server>
 local function poll()
   local Promise = require("opencode.promise")
   local poll_timer, timer_err, timer_errname = vim.uv.new_timer()
   if not poll_timer then
-    return Promise.reject("Failed to create timer to poll for `opencode`: " .. timer_errname .. ": " .. timer_err)
+    return Promise.reject("Failed to create timer to poll for OpenCode: " .. timer_errname .. ": " .. timer_err)
   end
 
   local retries = 0
@@ -61,12 +61,12 @@ local function poll()
   end)
 end
 
----Find and connect to an `opencode` server. Tries, in order:
+---Find and connect to an OpenCode server. Tries, in order:
 ---
 ---1. The currently connected server.
 ---2. The configured URL in `require("opencode.config").opts.server.url`.
----3. All local servers that overlap with Neovim's CWD. Automatically returns if just one, otherwise prompts to select from those.
----4. Calling `vim.g.opencode_opts.server.start` and retrying the above for five seconds.
+---3. All local servers that overlap with Neovim's CWD. Automatically selects if just one, otherwise prompts to select from them.
+---4. Calling `vim.g.opencode_opts.server.start` and retrying the above over five seconds.
 ---
 ---@return Promise<opencode.server.Server>
 function M.get()
@@ -88,7 +88,7 @@ function M.get()
 
       local start_ok, start_result = pcall(start)
       if not start_ok then
-        return Promise.reject("Failed to start `opencode`: " .. start_result)
+        return Promise.reject("Failed to start OpenCode: " .. start_result)
       end
 
       return poll()
@@ -98,7 +98,7 @@ function M.get()
     end)
 end
 
----Search for `opencode` processes on this machine and resolve them to servers.
+---Search for `opencode` processes on this machine and attempt to resolve them to servers.
 ---
 ---@return Promise<opencode.server.Server[]>
 function M.locally()
@@ -135,13 +135,15 @@ function M.locally()
           end
         end
 
-        return Promise.reject("No `opencode` servers found")
+        return Promise.reject("No OpenCode servers found")
       end
 
       return servers
     end)
 end
 
+---Attempt to connect to the OpenCode server at `vim.g.opencode_opts.server.url`.
+---
 ---@return Promise<opencode.server.Server>?
 function M.configured()
   local url = require("opencode.config").opts.server and require("opencode.config").opts.server.url
@@ -151,7 +153,7 @@ function M.configured()
 
   return type(url) == "string"
       and require("opencode.server").new(url):catch(function()
-        return require("opencode.promise").reject("Failed to connect to configured `opencode` server URL: " .. url)
+        return require("opencode.promise").reject("Failed to connect to configured OpenCode server URL: " .. url)
       end)
     or type(url) == "function"
       and require("opencode.promise")
@@ -160,7 +162,7 @@ function M.configured()
             if resolved_url then
               resolve(resolved_url)
             else
-              reject("Configured `opencode` server URL resolved to `nil`")
+              reject("Configured OpenCode server URL resolved to `nil`")
             end
           end)
         end)

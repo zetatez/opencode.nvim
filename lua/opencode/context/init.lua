@@ -278,7 +278,7 @@ local function get_buffer_range_text(bufnr, start_line, start_col, end_line, end
   return table.concat(lines, "\n")
 end
 
----Format a location for `opencode`.
+---Format a location for OpenCode.
 ---
 ---@param opts { path?: string, buf?: integer, from?: integer[], to?: integer[] } One of `path` or `buf` is required. `from` and `to` are 1-based `{ line, col? }` tuples.
 ---@return string? formatted Location if backed by a file (e.g. `opencode.lua:L21:C10-L65:C11`) so OpenCode can gather context, else literal text of the range or buffer. `nil` if invalid file or buffer.

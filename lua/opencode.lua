@@ -5,11 +5,11 @@ local M = {}
 --- UI ---
 ----------
 
----Input a prompt for `opencode`.
+---Input a prompt for OpenCode.
 ---
 --- - End the prompt with a space to append instead of submit.
 --- - Press `<Up>` to browse recent asks.
---- - Highlights and completes contexts and `opencode` subagents.
+--- - Highlights and completes contexts and OpenCode subagents.
 ---   - Press `<Tab>` to trigger built-in completion.
 ---   - Provided by in-process LSP when using `snacks.input`.
 ---
@@ -60,10 +60,10 @@ M.statusline = require("opencode.events.status").statusline
 --- Programmatic API ---
 ------------------------
 
----Prompt `opencode`.
+---Prompt OpenCode.
 ---
 --- - End the prompt with a space to append instead of submit.
---- - `opencode` will interpret references to files or subagents
+--- - OpenCode will interpret references to files or subagents
 ---
 ---@param prompt string
 function M.prompt(prompt)
@@ -79,7 +79,7 @@ function M.prompt(prompt)
     end)
 end
 
----Command `opencode`.
+---Command OpenCode.
 ---
 ---@param command opencode.Command|string
 function M.command(command)
@@ -135,13 +135,13 @@ M.format = require("opencode.context").format
 --- Server ---
 ----------------
 
----Start the configured `opencode` server.
+---Start the configured OpenCode server.
 function M.start()
   local opts = require("opencode.config").opts
   if opts.server and opts.server.start then
     opts.server.start()
   else
-    vim.notify("No `opts.server.start` function configured", vim.log.levels.ERROR, { title = "opencode" })
+    vim.notify("No `vim.g.opencode_opts.server.start` configured", vim.log.levels.ERROR, { title = "opencode" })
   end
 end
 return M

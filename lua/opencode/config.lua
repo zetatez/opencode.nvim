@@ -13,7 +13,7 @@ vim.g.opencode_opts = vim.g.opencode_opts
 
 ---@class opencode.Opts
 ---
----Connect to a specific `opencode` server, and optionally manage one.
+---Connect to a specific OpenCode server, and optionally manage one.
 ---@field server? opencode.server.Opts
 ---
 ---Contexts to inject into prompts, keyed by their placeholder.
@@ -27,13 +27,13 @@ vim.g.opencode_opts = vim.g.opencode_opts
 ---Supports [`snacks.picker`](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md).
 ---@field select? opencode.select.Opts
 ---
----Options for handling `opencode` events.
+---Options for handling OpenCode events.
 ---@field events? opencode.events.Opts
 ---@type opencode.Opts
 local defaults = {
   server = {
     url = nil,
-    username = vim.env.OPENCODE_SERVER_USERNAME or "opencode", -- Same env vars and defaults as `opencode`
+    username = vim.env.OPENCODE_SERVER_USERNAME or "opencode", -- Same env vars and defaults as OpenCode
     password = vim.env.OPENCODE_SERVER_PASSWORD,
     start = function()
       vim.cmd("vsplit term://opencode --port | wincmd p")
@@ -50,7 +50,7 @@ local defaults = {
     ["@marks"] = require("opencode.context.builtins").marks,
   },
   ask = {
-    prompt = "Ask opencode: ",
+    prompt = "Ask OpenCode: ",
     completion = "customlist,v:lua.opencode_completion",
     snacks = {
       icon = "󰚩 ",
@@ -81,7 +81,7 @@ local defaults = {
     },
   },
   select = {
-    prompt = "opencode: ",
+    prompt = "OpenCode: ",
     prompts = {
       ask = "...",
       diagnostics = "Explain @diagnostics",

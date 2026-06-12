@@ -12,5 +12,5 @@ vim.api.nvim_create_autocmd("User", {
     local url = args.data.url
     require("opencode.events.status").update(event, url)
   end,
-  desc = "Update opencode status",
+  desc = "Update OpenCode status",
 })
