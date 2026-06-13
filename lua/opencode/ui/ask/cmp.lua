@@ -48,7 +48,7 @@ handlers[ms.textDocument_completion] = function(params, callback)
       kind = vim.lsp.protocol.CompletionItemKind.Property,
       documentation = {
         kind = "markdown",
-        value = "```" .. agent.description or "Agent" .. "```",
+        value = "```" .. (agent.description or "Agent") .. "```",
       },
     }
     table.insert(items, item)

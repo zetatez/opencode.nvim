@@ -134,10 +134,10 @@ function M.quickfix(context)
   for _, entry in ipairs(qflist) do
     local has_buf = entry.bufnr ~= 0 and vim.api.nvim_buf_get_name(entry.bufnr) ~= ""
     if has_buf then
-      table.insert(
-        lines,
-        context.format({ buf = entry.bufnr, from = { entry.lnum, entry.col }, rel = context.server.cwd })
-      )
+      local formatted = context.format({ buf = entry.bufnr, from = { entry.lnum, entry.col }, rel = context.server.cwd })
+      if formatted then
+        table.insert(lines, formatted)
+      end
     end
   end
   return table.concat(lines, ", ")
