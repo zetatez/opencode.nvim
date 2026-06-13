@@ -76,7 +76,7 @@ function Server.new(url)
   local Promise = require("opencode.promise")
   -- Serially check health first to confirm that this is a valid and authenticated OpenCode server.
   -- Would like to differentiate headless servers, but not possible afaict unfortunately.
-  -- No endpoint exposes such information, and TUI commands sent to a headless server with none attached just no-op, with no tell in the respone.
+  -- No endpoint exposes such information, and TUI commands sent to a headless server with none attached just no-op, with no tell in the response.
   -- So user must manually `opencode attach` in that case.
   return self
     :get_health()
@@ -319,23 +319,46 @@ local OPENCODE_HEARTBEAT_INTERVAL_MS = 10000
 ---@type opencode.server.Server?
 Server.connected = nil
 
+---Generation counter to prevent stale connect() callbacks from taking effect.
+---@type number
+Server._connect_generation = 0
+
+---Job ID of the in-flight SSE subscription during connection.
+---@type number?
+Server._pending_job_id = nil
+
 ---Subscribe to this server's SSE stream and dispatch autocmds for received events.
 ---Disconnects currently connected server first.
----Idempotent.
----
+---Idempotent. Uses a generation counter to prevent race conditions when called rapidly.
 ---@return Promise<opencode.server.Server> server Promise that resolves or rejects according to initial connection success.
 function Server:connect()
   local Promise = require("opencode.promise")
 
   if Server.connected == self then
     return Promise.resolve(self)
-  elseif Server.connected then
+  end
+
+  -- Cancel any in-flight connection attempt from a previous connect() call
+  if Server._pending_job_id then
+    vim.fn.jobstop(Server._pending_job_id)
+    Server._pending_job_id = nil
+  end
+
+  if Server.connected then
     Server.connected:disconnect()
   end
 
+  local generation = Server._connect_generation + 1
+  Server._connect_generation = generation
+
   return Promise.new(function(resolve, reject)
-    self.subscription_job_id = self:sse_subscribe(
+    local job_id = self:sse_subscribe(
       function(response)
+        -- Ignore callbacks from stale connect() calls
+        if Server._connect_generation ~= generation then
+          return
+        end
+
         if self.heartbeat_timer then
           self.heartbeat_timer:start(
             OPENCODE_HEARTBEAT_INTERVAL_MS + 1000,
@@ -348,6 +371,7 @@ function Server:connect()
 
         if response.type == "server.connected" then
           Server.connected = self
+          Server._pending_job_id = nil
           resolve(self)
         elseif response.type == "server.instance.disposed" then
           self:disconnect()
@@ -358,19 +382,28 @@ function Server:connect()
       -- Server disappeared ungracefully, e.g. process killed, network error, etc.
       -- Also called on manual disconnects, like our `vim.fn.jobstop`.
       function(msg)
+        -- Ignore callbacks from stale connect() calls
+        if Server._connect_generation ~= generation then
+          return
+        end
         local was_connected = Server.connected == self
+        Server._pending_job_id = nil
         self:disconnect()
         if not was_connected then
           reject(msg)
         end
       end
     )
+    Server._pending_job_id = job_id
   end)
 end
 
 ---Unsubscribe from this server's SSE stream and stop the heartbeat timer.
 ---Idempotent.
 function Server:disconnect()
+  if Server._pending_job_id and Server._pending_job_id == self.subscription_job_id then
+    Server._pending_job_id = nil
+  end
   if self.subscription_job_id then
     vim.fn.jobstop(self.subscription_job_id)
     self.subscription_job_id = nil
