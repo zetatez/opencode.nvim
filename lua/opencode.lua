@@ -1,6 +1,18 @@
 ---opencode.nvim public API.
 local M = {}
 
+---Generation counter so that a second `ask()` supersedes the first before it sends a prompt.
+---@type number
+local _ask_generation = 0
+
+---Context of the current `ask()`, so it can be resumed when superseded by another `ask()`.
+---@type opencode.context.Context?
+local _ask_context = nil
+
+---Cancel function for the current `ask()`, so the input UI can be closed when superseded.
+---@type fun()?
+local _ask_cancel = nil
+
 ---@param err? string
 local function on_error(err)
   if err then
@@ -16,17 +28,53 @@ end
 ---   - Press `<Tab>` to trigger built-in completion.
 ---   - Provided by in-process LSP when using [snacks.input](https://github.com/folke/snacks.nvim/blob/main/docs/input.md).
 ---
+---If called while another `ask()` is still in flight, the previous one is cancelled
+---(its input closed, context resumed, and its prompt will not be sent).
+---
 ---@param default? string Text to pre-fill the input with.
 function M.ask(default)
+  if _ask_cancel then
+    _ask_cancel()
+    _ask_cancel = nil
+  end
+
+  if _ask_context then
+    _ask_context:resume()
+  end
+
+  local generation = _ask_generation + 1
+  _ask_generation = generation
+  _ask_context = nil
+
   require("opencode.server.discovery")
     .get()
     :next(function(server)
+      if _ask_generation ~= generation then
+        return
+      end
       local context = require("opencode.context").new(server)
-      return require("opencode.ui.ask").ask(default, context):next(function(input)
+      _ask_context = context
+      local ask_promise, cancel = require("opencode.ui.ask").ask(default, context)
+      _ask_cancel = cancel
+      return ask_promise:next(function(input)
+        _ask_cancel = nil
+        if _ask_generation ~= generation then
+          return
+        end
+        context:resume()
         return require("opencode.api.prompt").prompt(input, context)
       end)
     end)
-    :catch(on_error)
+    :catch(function(err)
+      if _ask_generation == generation then
+        if _ask_context then
+          _ask_context:resume()
+        end
+        _ask_context = nil
+        _ask_cancel = nil
+      end
+      on_error(err)
+    end)
 end
 
 ---Select from all opencode.nvim functionality.

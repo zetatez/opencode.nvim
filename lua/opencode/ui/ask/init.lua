@@ -8,7 +8,7 @@ local M = {}
 
 ---@param default? string Text to pre-fill the input with.
 ---@param context opencode.context.Context
----@return Promise<string> input
+---@return Promise<string> input, fun() cancel
 function M.ask(default, context)
   local config = require("opencode.config")
   ---@type snacks.input.Opts
@@ -33,10 +33,40 @@ function M.ask(default, context)
     input_opts = vim.tbl_deep_extend("keep", input_opts, config.opts.ask.snacks)
   end
 
-  return require("opencode.promise.ui").input(input_opts):catch(function(err)
-    context:resume()
-    return require("opencode.promise").reject(err)
+  local cancelled = false
+  local close_fn
+
+  local promise = require("opencode.promise").new(function(resolve, reject)
+    local input_handle = vim.ui.input(input_opts, function(input)
+      if cancelled then
+        return
+      end
+      if input == nil or input == "" then
+        return reject()
+      end
+      resolve(input)
+    end)
+    if type(input_handle) == "table" and input_handle.close then
+      close_fn = function()
+        input_handle:close()
+      end
+    end
   end)
+
+  local function cancel()
+    if cancelled then
+      return
+    end
+    cancelled = true
+    if close_fn then
+      close_fn()
+    else
+      pcall(vim.cmd, "stopinsert")
+      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", true)
+    end
+  end
+
+  return promise, cancel
 end
 
 -- FIX: Overridden by blink.cmp cmdline completion if enabled, and that won't have the below items.
