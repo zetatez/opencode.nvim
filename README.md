@@ -218,7 +218,7 @@ vim.g.opencode_opts = {
 }
 
 -- Can also leverage toggle functionality.
--- Avoid <leader> here — Neovim watches for keymaps in terminal mode, so your leader key will have input delay.
+-- If you use <leader> here, remove 't' — otherwise Neovim will add input delay to your <leader> when typing in the terminal to watch for the mapping.
 vim.keymap.set({ 'n', 't' }, '<C-.>', function()
   require('snacks.terminal').toggle(opencode_cmd, snacks_terminal_opts)
 end, { desc = 'Toggle OpenCode' })
