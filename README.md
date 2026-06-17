@@ -314,8 +314,8 @@ vim.api.nvim_create_autocmd("User", {
     -- See the available event types and their properties
     vim.notify(vim.inspect(event))
     -- Do something useful
-    if event.type == "session.idle" then
-      vim.notify("OpenCode finished responding")
+    if event.type == "session.status" then
+      vim.notify("OpenCode status updated: " .. event.properties.status.type)
     end
   end,
 })

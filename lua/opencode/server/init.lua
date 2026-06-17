@@ -40,41 +40,27 @@ Server.__index = Server
 ---@class opencode.server.Session
 ---@field id string
 ---@field title string
----@field time opencode.server.SessionTime
-
----@class opencode.server.SessionTime
----@field created integer time in milliseconds
----@field updated integer time in milliseconds
+---@field time { created: integer, updated: integer }
 
 ---@class opencode.server.Agent
 ---@field name string
 ---@field description string
 ---@field mode "primary"|"subagent"
 
----@class opencode.server.PathResponse
----@field directory string
----@field worktree string
-
 ---@alias opencode.server.PermissionReply
 ---| "once"
 ---| "always"
 ---| "reject"
 
----@class opencode.server.Event
----@field type opencode.server.event.type|string
----@field properties table
-
----@alias opencode.server.event.type
----| "server.connected"
----| "server.instance.disposed"
----| "session.idle"
----| "session.diff"
----| "session.heartbeat"
----| "message.updated"
----| "message.part.updated"
----| "permission.updated"
----| "permission.replied"
----| "session.error"
+---@alias opencode.server.Event
+---| { type: "file.edited" }
+---| { type: "permission.asked", properties: { id: number, permission: string, patterns: string[], metadata?: { diff: string, filepath: string } } }
+---| { type: "permission.replied", properties: { requestID: number } }
+---| { type: "server.connected" }
+---| { type: "server.instance.disposed" }
+---| { type: "session.status", properties: { status: { type: opencode.status.Status } } }
+---| { type: "tui.command.execute", properties: { command: string } }
+---| { type: string, properties: table }
 
 ---Attempt to connect to an OpenCode server and fetch its health and details.
 ---Rejects if the health fails — the last line of defense against false-positive server discovery.
@@ -313,7 +299,7 @@ function Server:select_session(session_id)
   end)
 end
 
----@return Promise<opencode.server.PathResponse>
+---@return Promise<{ directory: string, worktree: string }>
 function Server:get_path()
   return require("opencode.promise").new(function(resolve, reject)
     self:curl("/path", "GET", nil, resolve, reject)

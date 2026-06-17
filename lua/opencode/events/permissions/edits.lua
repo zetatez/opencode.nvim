@@ -3,9 +3,9 @@
 
 local M = {}
 
----@type string?
+---@type integer?
 local current_edit_request_id = nil
----@type nil|integer
+---@type integer?
 local diff_tabpage = nil
 
 ---@param event opencode.server.Event
