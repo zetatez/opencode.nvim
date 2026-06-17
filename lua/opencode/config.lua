@@ -104,7 +104,10 @@ local defaults = {
       ["session.select"] = "Select session",
       ["session.undo"] = "Undo last action in current session",
     },
-    server = true,
+    server = {
+      ["server.select"] = "Select server",
+      ["server.start"] = "Start configured server",
+    },
     snacks = {
       preview = "preview",
       layout = {

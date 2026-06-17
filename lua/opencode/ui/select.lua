@@ -12,8 +12,12 @@ local M = {}
 ---Commands to display, and their descriptions.
 ---@field commands? table<opencode.Command|string, string>|false
 ---
----Whether to show server controls.
----@field server? boolean
+---Server controls to display, and their descriptions.
+---@field server? table<opencode.select.server.Items, string>|false
+
+---@alias opencode.select.server.Items
+---| 'server.select'
+---| 'server.start'
 
 ---Select from all opencode.nvim functionality.
 ---
@@ -83,14 +87,16 @@ function M.select(opts, server)
   -- Server section
   if opts.server then
     table.insert(items, { __group = true, name = "SERVER", preview = { text = "" } })
-    table.insert(items, {
-      __type = "server",
-      name = "server.select",
-      text = "Select server",
-      highlights = { { "Select server", "Comment" } },
-      preview = { text = "" },
-    })
-    if config.opts.server.start then
+    if opts.server["server.select"] then
+      table.insert(items, {
+        __type = "server",
+        name = "server.select",
+        text = "Select server",
+        highlights = { { "Select server", "Comment" } },
+        preview = { text = "" },
+      })
+    end
+    if opts.server["server.start"] and config.opts.server.start then
       table.insert(items, {
         __type = "server",
         name = "server.start",
