@@ -22,8 +22,28 @@ local defaults = {
     url = nil,
     username = vim.env.OPENCODE_SERVER_USERNAME or "opencode", -- Same env vars and defaults as OpenCode
     password = vim.env.OPENCODE_SERVER_PASSWORD,
-    start = function()
-      vim.cmd("vsplit term://opencode --port | wincmd p")
+    ---Start an OpenCode server rooted at `cwd`.
+    ---Picks a terminal emulator appropriate to the current OS, in priority order: linux, macos, windows.
+    ---@param cwd string
+    start = function(cwd)
+      local cmd
+      if vim.fn.has("linux") == 1 or vim.fn.has("unix") == 1 then
+        cmd = { "st", "-e", "opencode", "--port" }
+      elseif vim.fn.has("mac") == 1 or vim.fn.has("macos") == 1 then
+        local quoted = (cwd:gsub("\\", "\\\\"):gsub('"', '\\"'))
+        cmd = {
+          "osascript",
+          "-e",
+          string.format('tell application "Terminal" to do script "cd \\"%s\\" && opencode --port"', quoted),
+        }
+      elseif vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
+        if vim.fn.executable("wt") == 1 then
+          cmd = { "wt.exe", "-d", cwd, "new-tab", "--", "opencode", "--port" }
+        else
+          cmd = { "cmd.exe", "/c", "start", "", "/D", cwd, "cmd.exe", "/K", "opencode --port" }
+        end
+      end
+      vim.fn.jobstart(cmd, { cwd = cwd, detach = true })
     end,
   },
   contexts = {

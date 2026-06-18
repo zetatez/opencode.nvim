@@ -3,6 +3,7 @@
 ---@class opencode.server.discovery.process.Process
 ---@field pid number
 ---@field port number
+---@field cwd string
 
 local M = {}
 

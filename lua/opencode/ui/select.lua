@@ -171,7 +171,7 @@ function M.select(context, opts)
               return new_server:connect()
             end)
         elseif choice.name == "server.start" then
-          return config.opts.server.start()
+          return config.opts.server.start(require("opencode.cwd").get())
         end
       else
         return Promise.reject("Unknown item: " .. choice.name)

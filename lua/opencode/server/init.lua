@@ -6,7 +6,7 @@
 ---@field url? string | fun(callback: fun(url?: string))
 ---@field username? string Basic auth username.
 ---@field password? string Basic auth password.
----@field start? fun() | false Start an OpenCode server. Called when none are found; will retry after.
+---@field start? fun(cwd: string) | false Start an OpenCode server rooted at `cwd`. Called when none are found; will retry after.
 
 ---An OpenCode server.
 ---@class opencode.server.Server

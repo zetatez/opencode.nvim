@@ -4,25 +4,32 @@ local function find()
   local Promise = require("opencode.promise")
   local connected_server = require("opencode.server").connected
 
-  return connected_server and Promise.resolve(connected_server)
-    or M.configured()
-    or M.locally():next(function(servers)
-      local nvim_cwd = vim.fn.getcwd()
-      local servers_sharing_cwd = vim.tbl_filter(function(server) ---@param server opencode.server.Server
-        -- Overlaps in either direction, with no non-empty mismatch
-        return server.cwd:find(nvim_cwd, 0, true) == 1 or nvim_cwd:find(server.cwd, 0, true) == 1
-      end, servers)
+  if connected_server then
+    return Promise.resolve(connected_server)
+  end
 
-      if #servers_sharing_cwd == 0 then
-        -- We prefer falling back to `opts.server.start` over selecting from servers that don't match the CWD.
-        -- Manual selection is still available for that rare need.
-        return Promise.reject("No OpenCode servers found with overlapping CWD")
-      elseif #servers_sharing_cwd == 1 then
-        return Promise.resolve(servers_sharing_cwd[1])
-      else
-        return require("opencode.ui.select_server").select_server(servers_sharing_cwd)
-      end
-    end)
+  local configured = M.configured()
+  if configured then
+    return configured
+  end
+
+  local wd = require("opencode.cwd").get()
+
+  return M.locally():next(function(servers)
+    local matching = vim.tbl_filter(function(server)
+      local ok, resolved = pcall(vim.uv.fs_realpath, server.cwd)
+      local server_cwd = (ok and type(resolved) == "string" and resolved ~= "") and resolved or server.cwd
+      return server_cwd:gsub("/+$", "") == wd
+    end, servers)
+
+    if #matching == 0 then
+      return Promise.reject("No OpenCode server found at " .. wd)
+    elseif #matching == 1 then
+      return matching[1]
+    else
+      return require("opencode.ui.select_server").select_server(matching)
+    end
+  end)
 end
 
 ---Look for an OpenCode server every second, rejecting if not found after five seconds.
@@ -80,13 +87,14 @@ function M.get()
       end
 
       local start = require("opencode.config").opts.server.start
+      local wd = require("opencode.cwd").get()
 
       if not start then
         -- Propagate original error
         return Promise.reject(err)
       end
 
-      local start_ok, start_result = pcall(start)
+      local start_ok, start_result = pcall(start, wd)
       if not start_ok then
         return Promise.reject("Failed to start OpenCode: " .. start_result)
       end
