@@ -138,7 +138,7 @@ function M.select(opts, server)
     :next(function(choice) ---@param choice opencode.select.Item
       if choice.__type == "prompt" then
         ---@type string
-        local prompt = require("opencode.config").opts.select.prompts[choice.name]
+        local prompt = choice.text
         local ask = prompt:match("%.%.%.$")
         if ask then
           return require("opencode.ui.ask")
