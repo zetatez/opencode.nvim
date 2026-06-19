@@ -39,8 +39,8 @@ function M.select(opts, server)
         text = prompt,
         highlights = rendered.input, -- `snacks.picker`'s `select` seems to ignore this, so we incorporate it ourselves in `format_item`
         preview = {
-          text = context.plaintext(rendered.output),
-          extmarks = context.extmarks(rendered.output),
+          text = rendered.output:plaintext(),
+          extmarks = rendered.output:extmarks(),
         },
       }
       table.insert(prompt_items, item)

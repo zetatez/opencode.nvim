@@ -18,8 +18,7 @@ function M.ask(default, server, context)
   local input_opts = {
     default = default,
     highlight = function(text)
-      local rendered = context:render(text, server.subagents)
-      return context.input_highlight(rendered.input)
+      return context:render(text, server.subagents).input:input_highlight()
     end,
   }
   input_opts = vim.tbl_deep_extend("keep", config.opts.ask, input_opts)

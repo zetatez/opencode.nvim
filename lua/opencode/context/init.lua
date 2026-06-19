@@ -9,12 +9,6 @@
 local Context = {}
 Context.__index = Context
 
----@class opencode.context.Text
----@field [1] string Text.
----@field [2]? string Highlight group.
-
----@class opencode.context.Extmark vim.api.keyset.set_extmark : { col?: number, row?: number, field?: string }
-
 ---@class opencode.context.Range
 ---@field from integer[] { line, col } (1,0-based)
 ---@field to integer[] { line, col } (1,0-based)
@@ -124,7 +118,7 @@ end
 ---Render `opts.contexts` in `prompt`.
 ---@param prompt string
 ---@param agents opencode.server.Agent[]
----@return { input: opencode.context.Text[], output: opencode.context.Text[] }
+---@return { input: opencode.context.rendered.Rendered, output: opencode.context.rendered.Rendered }
 function Context:render(prompt, agents)
   local contexts = require("opencode.config").opts.contexts or {}
 
@@ -133,7 +127,7 @@ function Context:render(prompt, agents)
     return "@" .. agent.name
   end, agents)
 
-  ---@type table<string, { input: (fun(): opencode.context.Text), output: (fun(): opencode.context.Text) }>
+  ---@type table<string, { input: (fun(): opencode.context.rendered.Text), output: (fun(): opencode.context.rendered.Text) }>
   local placeholders = {}
   for _, context_placeholder in ipairs(context_placeholders) do
     placeholders[context_placeholder] = {
@@ -199,66 +193,12 @@ function Context:render(prompt, agents)
     end
   end
 
+  local Rendered = require("opencode.context.rendered")
+
   return {
-    input = input,
-    output = output,
+    input = setmetatable(input, Rendered),
+    output = setmetatable(output, Rendered),
   }
-end
-
----Convert rendered context to plaintext.
----@param rendered opencode.context.Text[]
----@return string
-function Context.plaintext(rendered)
-  return table.concat(vim.tbl_map(
-    ---@param part opencode.context.Text
-    function(part)
-      return part[1]
-    end,
-    rendered
-  ))
-end
-
----Convert rendered context to extmarks.
----Handles multiline parts.
----
----@param rendered opencode.context.Text[]
----@return opencode.context.Extmark[]
-function Context.extmarks(rendered)
-  local row = 1
-  local col = 1
-  local extmarks = {}
-  for _, part in ipairs(rendered) do
-    local part_text = part[1]
-    local part_hl = part[2] or nil
-    local segments = vim.split(part_text, "\n", { plain = true })
-    for i, segment in ipairs(segments) do
-      if i > 1 then
-        row = row + 1
-        col = 1
-      end
-      if part_hl then
-        ---@type opencode.context.Extmark
-        local extmark = {
-          row = row,
-          col = col - 1,
-          end_col = col + #segment - 1,
-          hl_group = part_hl,
-        }
-        table.insert(extmarks, extmark)
-      end
-      col = col + #segment
-    end
-  end
-  return extmarks
-end
-
----Transforms to `:help input()-highlight` format.
----@param rendered opencode.context.Text[]
----return { [1]: integer, [2]: integer, [3]: string }[]
-function Context.input_highlight(rendered)
-  return vim.tbl_map(function(extmark)
-    return { extmark.col, extmark.end_col, extmark.hl_group }
-  end, Context.extmarks(rendered))
 end
 
 ---Get the literal text of a buffer range, trimmed to columns.

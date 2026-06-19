@@ -73,7 +73,7 @@ handlers[ms.completionItem_resolve] = function(params, callback)
     -- Or matching `[]` disappears because it's interpreted as a markdown link with an empty URL.
     item.documentation = {
       kind = "plaintext",
-      value = context.plaintext(rendered.output),
+      value = rendered.output:plaintext(),
     }
   end
 

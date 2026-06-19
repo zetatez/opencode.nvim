@@ -10,8 +10,7 @@ function M.prompt(prompt, server, context)
     or require("opencode.promise").resolve(prompt)
   )
     :next(function(_prompt) ---@param _prompt string
-      local rendered = context:render(_prompt, server.subagents)
-      local plaintext = context.plaintext(rendered.output)
+      local plaintext = context:render(_prompt, server.subagents).output:plaintext()
 
       return server:tui_append_prompt(plaintext):next(function()
         if not _prompt:match(" $") then
