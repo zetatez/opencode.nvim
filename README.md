@@ -9,14 +9,13 @@ https://github.com/user-attachments/assets/e85e021c-fa8f-466e-830c-c667b28f611e
 ## ✨ Features
 
 - Connect to _any_ OpenCode server, or start an integrated instance
-- Inject editor context (cursor, selection, buffer, ...)
-- Input prompts with completions, highlights, and normal mode
-- Select and define re-usable prompts
-- Execute commands
-- Monitor and respond to events
-- Accept/reject and reload edits
-- _Vim-y_ — operator and dot-repeat
-- Simple and sensible defaults to get you started quickly
+- Inject editor context
+- Input prompts with completions and highlights
+- Select from built-in and custom prompts
+- Execute OpenCode commands
+- Accept/reject and reload OpenCode edits
+- Handle OpenCode events as autocmds
+- Simple, sensible, Vim-y defaults and interfaces
 
 ## 📦 Setup
 
