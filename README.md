@@ -58,7 +58,7 @@ vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.h
   config = function()
     ---@type opencode.Opts
     vim.g.opencode_opts = {
-      -- Your configuration, if any; goto definition on the type or field for details
+      -- Your configuration, if any; goto definition on the type for details
     }
 
     vim.o.autoread = true -- Required for `vim.g.opencode_opts.events.reload`
@@ -91,10 +91,9 @@ programs.nixvim = {
 
 </details>
 
-> [!TIP]
-> Run `:checkhealth opencode` after setup.
-
 ### Integrations
+
+The below examples are specific, but generalize to other plugins.
 
 <details>
 <summary><a href="https://github.com/folke/snacks.nvim">snacks.nvim</a></summary>
@@ -107,8 +106,7 @@ require("snacks").setup({
   picker = {
     enabled = true, -- Enhances `select()`
     actions = {
-      ---@param picker snacks.Picker
-      opencode_send = function(picker)
+      opencode_send = function(picker) ---@param picker snacks.Picker
         local items = vim.tbl_map(function(item) ---@param item snacks.picker.Item
           return item.file
             and require("opencode").format({ path = item.file, from = item.pos, to = item.end_pos })
@@ -132,6 +130,28 @@ require("snacks").setup({
 </details>
 
 <details>
+<summary><a href="https://github.com/saghen/blink.cmp">blink.cmp</a></summary>
+
+```lua
+-- Configure blink.cmp to show completions from opencode.nvim's in-process LSP.
+-- Only applicable when using snacks.input.
+require("blink.cmp").setup({
+  sources = {
+    -- Either enable LSP (and optionally buffer) source globally
+    default = { 'lsp', 'buffer' },
+    -- Or only for `ask()`
+    per_filetype = {
+      opencode_ask = { 'lsp', 'buffer' },
+    },
+    -- Display buffer completions (if included above) when no LSP completions are available
+    providers = { lsp = { fallbacks = {} } },
+  },
+})
+```
+
+</details>
+
+<details>
 <summary><a href="https://github.com/nvim-lualine/lualine.nvim">lualine.nvim</a></summary>
 
 ```lua
@@ -139,7 +159,7 @@ require("lualine").setup({
   sections = {
     lualine_z = {
       {
-        -- Shows the currently connected server and its status
+        -- Show the currently connected server and its status
         require("opencode").statusline,
       },
     }
@@ -148,6 +168,9 @@ require("lualine").setup({
 ```
 
 </details>
+
+> [!TIP]
+> Run `:checkhealth opencode` after setup.
 
 ## ⚙️ Configuration
 
