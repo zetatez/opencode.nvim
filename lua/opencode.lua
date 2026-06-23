@@ -110,14 +110,4 @@ end
 
 M.format = require("opencode.context").format
 
----Start the configured OpenCode server.
-function M.start()
-  local opts = require("opencode.config").opts
-  if opts.server and opts.server.start then
-    opts.server.start()
-  else
-    vim.notify("No `vim.g.opencode_opts.server.start` configured", vim.log.levels.ERROR, { title = "opencode" })
-  end
-end
-
 return M
