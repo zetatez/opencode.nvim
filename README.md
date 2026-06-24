@@ -1,15 +1,14 @@
-# opencode.nvim
+# opencode.nvim — Neovim 🤝 OpenCode
 
-Bridge Neovim and [OpenCode AI](https://opencode.ai/) to stay in your flow.
+A Neovim plugin that integrates [OpenCode](https://opencode.ai/) to keep you in your familiar flow.
 
 https://github.com/user-attachments/assets/e85e021c-fa8f-466e-830c-c667b28f611e
 
-> Like what you see? Check out [my config](https://github.com/nickjvandyke/nvim).
 
 ## ✨ Features
 
 - Connect to _any_ OpenCode server, or start an integrated instance
-- Inject editor context
+- Inject editor context (cursor, selection, buffer, etc.)
 - Input prompts with completions and highlights
 - Select from built-in and custom prompts
 - Execute OpenCode commands
@@ -289,7 +288,7 @@ Highlights and previews items when using [snacks.picker](https://github.com/folk
 Prompt OpenCode.
 
 - Injects configured contexts.
-- Trailing space appends; trailing "..." opens in `ask()`. 
+- Trailing space appends; trailing "..." opens in `ask()`.
 - OpenCode will interpret references to files or subagents.
 
 ### Operator — `require("opencode").operator()`
@@ -363,9 +362,3 @@ For edit requests, opencode.nvim opens the target file in a new tab and uses Neo
 | `dp`    | Natively accept _only_ the hunk under the cursor, and reject the edit request |
 | `do`    | Natively reject _only_ the hunk under the cursor, and reject the edit request |
 | `q`     | Close the diff                                                                |
-
-## 🙏 Acknowledgments
-
-- Inspired by [nvim-aider](https://github.com/GeorgesAlkhouri/nvim-aider), [neopencode.nvim](https://github.com/loukotal/neopencode.nvim), and [sidekick.nvim](https://github.com/folke/sidekick.nvim).
-- Uses OpenCode's TUI for simplicity — see [sudo-tee/opencode.nvim](https://github.com/sudo-tee/opencode.nvim) for a Neovim frontend.
-- [mcp-neovim-server](https://github.com/bigcodegen/mcp-neovim-server) may better suit you, but it lacks customization and tool calls are slow and unreliable.
